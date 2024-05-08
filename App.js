@@ -7,11 +7,12 @@ import GameScreen from "./screens/GameScreen";
 import Colours from "./constants/colours";
 import GameOverScreen from "./screens/GameOverScren";
 import AppLoading from "expo-app-loading";
+import {StatusBar} from 'expo-status-bar';
 
 
 export default function App() {
     const [userNumber, setUserNumber] = useState(null);
-    const [gameIsOver, setGameIsOver]  = useState(true);
+    const [gameIsOver, setGameIsOver] = useState(true);
     const [guessRounds, setGuessRounds] = useState(0)
 
     const [fontsLoaded] = useFonts({
@@ -20,7 +21,7 @@ export default function App() {
     })
 
     if (!fontsLoaded) {
-        return <AppLoading />;
+        return <AppLoading/>;
     }
 
     function pickedNumberHandler(pickedNumber) {
@@ -33,43 +34,53 @@ export default function App() {
         setGuessRounds(0);
     }
 
-    let screen = <StartGameScreen onPickNumber={pickedNumberHandler} />
+    let screen = <StartGameScreen onPickNumber={pickedNumberHandler}/>
 
-    if (userNumber) {screen = <GameScreen userNumber={userNumber} onGameOver={gameOverHandler}/>}
+    if (userNumber) {
+        screen = <GameScreen userNumber={userNumber} onGameOver={gameOverHandler}/>
+    }
 
     if (gameIsOver && userNumber) {
-        screen  = <GameOverScreen roundsNumber={guessRounds} userNumber={userNumber} onStartNewGame={startNewGameHandler} />
+        screen =
+            <GameOverScreen roundsNumber={guessRounds} userNumber={userNumber} onStartNewGame={startNewGameHandler}/>
     }
+
     function gameOverHandler(numberOfRounds) {
         setGameIsOver(true);
         setGuessRounds(numberOfRounds)
     }
 
     return (
-        <LinearGradient
-            colors={[Colours.primary700, Colours.accent500]}
-            style={styles.rootScreen}
-        >
-            <ImageBackground
-                resizeMode={"cover"}
-                source={require('./assets/images/background.png')}
+        <>
+            <StatusBar style='light'/>
+            <LinearGradient
+                colors={[Colours.primary700, Colours.accent500]}
                 style={styles.rootScreen}
-                imageStyle={{opacity: 0.15}}
             >
-               <SafeAreaView style={styles.rootScreen}>
-                   {screen}
-               </SafeAreaView>
-            </ImageBackground>
-        </LinearGradient>
-
+                <ImageBackground
+                    resizeMode={"cover"}
+                    source={require('./assets/images/background.png')}
+                    style={styles.rootScreen}
+                    imageStyle={{opacity: 0.15}}
+                >
+                    <SafeAreaView style={styles.mainScreen}>
+                        {screen}
+                    </SafeAreaView>
+                </ImageBackground>
+            </LinearGradient>
+        </>
     );
 }
 
 const styles = StyleSheet.create({
     rootScreen: {
-        flex: 1
+        flex: 1,
     },
     backgroundImage: {
         opacity: 0.15
+    },
+    mainScreen: {
+        flex: 1,
+        marginTop: StatusBar.currentHeight
     }
 });
